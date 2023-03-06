@@ -39,7 +39,12 @@ fn main() {
     let msg = matches.value_of("MESSAGE").unwrap();
 
     if matches.is_present("decrypt") {
-        let (plaintext, enigma) = decrypt(msg);
+        let rotors = matches.value_of("ROTORS");
+        let key = matches.value_of("KEY");
+        let ring = matches.value_of("RING");
+        let plugboard = matches.value_of("PLUGBOARD");
+
+        let (plaintext, enigma) = decrypt(msg, plugboard);
         println!("{}", plaintext.with_case_of(msg));
         eprintln!("> {}", enigma);
     }

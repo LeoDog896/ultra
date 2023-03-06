@@ -38,12 +38,23 @@ lazy_static! {
 /// 3. Incrementally adds the best plug until no improvement is made.
 ///
 /// Assumes `msg` contains only uppercase ASCII characters.
-pub fn decrypt(msg: &str) -> (String, Enigma) {
+pub fn decrypt(msg: &str, plugboard: Option<&str>) -> (String, Enigma) {
     let mut enigma;
 
     enigma = guess_rotor_and_first_key::<IoC>(msg);
     enigma = guess_key_and_ring::<Bigram>(msg, enigma);
-    enigma = guess_plugboard::<Quadgram>(msg, enigma);
+
+    if let Some(plugboard) = plugboard {
+        enigma = Enigma::new(
+            &enigma.rotor_list(),
+            &enigma.key_settings(),
+            &enigma.ring_settings(),
+            'B',
+            plugboard.to_uppercase().as_str()
+        );
+    } else {
+        enigma = guess_plugboard::<Quadgram>(msg, enigma);
+    }
 
     (enigma.encrypt(msg), enigma)
 }
